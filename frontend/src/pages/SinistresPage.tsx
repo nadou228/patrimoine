@@ -69,10 +69,14 @@ const asSinistres = (value: unknown): Sinistre[] => {
   return value.filter((item): item is Sinistre => typeof item === "object" && item !== null && "id" in item);
 };
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const getFullUrl = (url?: string) => {
   if (!url) return "";
+
   if (url.startsWith("http")) return url;
-  return `http://localhost:8082${url.startsWith('/') ? '' : '/'}${url}`;
+
+  return `${BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
 };
 
 const getAttachments = (piecesJointes?: string | string[]) => {

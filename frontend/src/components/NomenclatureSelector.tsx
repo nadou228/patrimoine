@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, Search, Loader2, CheckCircle2, Sparkles, X } from "lucide-react";
+import { resolveApiUrl } from "../api/config";
 
 export interface ArticleOption {
   code: string;
@@ -26,7 +27,7 @@ interface NomenclatureSelectorProps {
   initialLabel?: string;
 }
 
-const API = "http://localhost:8082/api/v1";
+const API = resolveApiUrl("/api/v1");
 
 async function fetchNom<T>(endpoint: string, params: Record<string, string> = {}): Promise<T[]> {
   const qs = new URLSearchParams(params).toString();

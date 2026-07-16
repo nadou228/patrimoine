@@ -8,7 +8,10 @@ const formatMoney = (value: number | undefined) => {
   return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "XOF" }).format(value).replace("XOF", "FCFA");
 };
 
-const normalizeUrl = (url: string) => url.startsWith("http") ? url : `http://localhost:8082${url}`;
+const API_URL = import.meta.env.VITE_API_URL;
+
+const normalizeUrl = (url: string) =>
+  url.startsWith("http") ? url : `${API_URL}${url}`;
 
 export default function AssetDetailDrawer({ 
   historyPanel, 

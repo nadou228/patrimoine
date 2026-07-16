@@ -75,10 +75,12 @@ const asReformes = (value: unknown): Reforme[] => {
   return value.filter((item): item is Reforme => typeof item === "object" && item !== null && "id" in item);
 };
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const getFullUrl = (url?: string) => {
   if (!url) return "";
   if (url.startsWith("http")) return url;
-  return `http://localhost:8082${url.startsWith('/') ? '' : '/'}${url}`;
+  return `${API_URL}${url.startsWith("/") ? "" : "/"}${url}`;
 };
 
 const formatMoney = (value?: number) => `${Math.round(value || 0).toLocaleString("fr-FR")} FCFA`;
