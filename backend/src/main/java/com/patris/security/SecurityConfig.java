@@ -35,7 +35,7 @@ public class SecurityConfig {
             .headers(headers -> headers
                 .frameOptions(frame -> frame.disable())
                 .contentSecurityPolicy(csp -> csp
-                    .policyDirectives("frame-ancestors 'self' http://localhost:5173")
+                    .policyDirectives("frame-ancestors 'self' https://patrimoine-030o.onrender.com")
                 )
             )
 

@@ -36,25 +36,6 @@ const LoginPage: React.FC = () => {
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      const result = await login(username, password);
-      if ((result as any)?.requiresTwoFactor) {
-        setTempToken((result as any).tempToken);
-        setStep('twofa');
-      } else {
-        navigate('/biens');
-      }
-    } catch {
-      setError('Identifiants incorrects ou serveur injoignable.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleCodeChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
     const next = [...totpCode];
@@ -98,6 +79,35 @@ const LoginPage: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  console.log("🟢 Bouton login cliqué");
+  console.log("username :", username);
+  console.log("password :", password);
+
+  setError('');
+  setLoading(true);
+
+  try {
+    const result = await login(username, password);
+
+    console.log("✅ Réponse login :", result);
+
+    if ((result as any)?.requiresTwoFactor) {
+      setTempToken((result as any).tempToken);
+      setStep('twofa');
+    } else {
+      navigate('/biens');
+    }
+  } catch (err) {
+    console.error("❌ Erreur login :", err);
+    setError('Identifiants incorrects ou serveur injoignable.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="login-alt">

@@ -54,18 +54,29 @@ export interface TwoFactorRequiredResponse {
   tempToken: string;
 }
 
-export const login = async (username: string, password: string): Promise<LoginResponse | TwoFactorRequiredResponse> => {
+export const login = async (username: string, password: string) => {
+
+  console.log("🚀 Tentative login");
+  console.log("URL appelée :", resolveApiUrl('/api/auth/login'));
+
   try {
-    const response = await api.post('/auth/login', { username, password });
-    const data = response.data;
-    // Si 2FA requise, ne pas stocker en localStorage — le LoginPage gère l'étape 2
-    if (data?.requiresTwoFactor) {
-      return data as TwoFactorRequiredResponse;
-    }
-    localStorage.setItem('user', JSON.stringify(data));
-    return data as LoginResponse;
-  } catch (error) {
-    throw new Error('Invalid credentials');
+    const response = await api.post('/auth/login', {
+      username,
+      password
+    });
+
+    console.log("Réponse backend :", response.data);
+
+    return response.data;
+
+  } catch(error:any) {
+
+    console.error(
+      "Erreur API login :",
+      error.response?.data || error.message
+    );
+
+    throw error;
   }
 };
 
