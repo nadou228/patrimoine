@@ -1,23 +1,14 @@
-# Backend
-backend/target/
+# Database local files
 backend/data/
 *.mv.db
 
-# Frontend
-frontend/node_modules/
-frontend/dist/
+# Java
+target/
 
-# IDE
-.vscode/
-.idea/
+# Node
+node_modules/
+dist/
 
-# Logs
-*.log
-
-# Env
+# Environment variables
 .env
 .env.*
-
-# OS
-.DS_Store
-Thumbs.db
