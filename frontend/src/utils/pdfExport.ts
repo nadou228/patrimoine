@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 const formatDate = (value?: string) => {
   if (!value) return '—';
@@ -47,16 +47,33 @@ const drawSignatureBlock = async (doc: jsPDF, yStart: number, signerName?: strin
 };
 
 const appendDetailsTable = (doc: jsPDF, rows: [string, string][], startY: number) => {
-  doc.autoTable({
+  autoTable(doc, {
     startY,
     head: [['Champ', 'Détails']],
     body: rows,
-    styles: { font: 'helvetica', fontSize: 10, cellPadding: 6 },
-    headStyles: { fillColor: [230, 230, 230], textColor: [20, 20, 20], halign: 'center' },
+    styles: {
+      font: 'helvetica',
+      fontSize: 10,
+      cellPadding: 6,
+    },
+    headStyles: {
+      fillColor: [230, 230, 230],
+      textColor: [20, 20, 20],
+      halign: 'center',
+    },
     theme: 'grid',
-    columnStyles: { 0: { cellWidth: 140, fontStyle: 'bold' }, 1: { cellWidth: 360 } },
+    columnStyles: {
+      0: {
+        cellWidth: 140,
+        fontStyle: 'bold',
+      },
+      1: {
+        cellWidth: 360,
+      },
+    },
   });
-  return doc.lastAutoTable.finalY + 12;
+
+  return (doc as any).lastAutoTable.finalY + 12;
 };
 
 export async function generateAffectationPdf(affectation: any, bien: any, options?: { signerName?: string; signatureDataUrl?: string }) {
