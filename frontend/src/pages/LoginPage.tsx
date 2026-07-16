@@ -69,7 +69,15 @@ const LoginPage: React.FC = () => {
         { code: parseInt(finalCode, 10) },
         { headers: { Authorization: `Bearer ${tempToken}` } }
       );
-      localStorage.setItem('currentUser', JSON.stringify(res.data));
+      localStorage.setItem(
+  'token',
+  res.data.token
+);
+
+    localStorage.setItem(
+      'currentUser',
+      JSON.stringify(res.data)
+    );
       navigate('/biens');
     } catch {
       setError("Code invalide. Vérifiez votre application d'authentification.");
@@ -96,11 +104,33 @@ const LoginPage: React.FC = () => {
     console.log("✅ Réponse login :", result);
 
     if ((result as any)?.requiresTwoFactor) {
-      setTempToken((result as any).tempToken);
-      setStep('twofa');
-    } else {
-      navigate('/biens');
-    }
+
+    setTempToken((result as any).tempToken);
+    setStep('twofa');
+
+  } else {
+
+    // Sauvegarde du token JWT
+    localStorage.setItem(
+      'token',
+      (result as any).token
+    );
+
+
+    // Sauvegarde utilisateur
+    localStorage.setItem(
+      'currentUser',
+      JSON.stringify(result)
+    );
+
+
+    console.log("✅ Token enregistré");
+    console.log("🚀 Redirection vers biens");
+
+
+    navigate('/biens');
+
+  }
   } catch (err) {
     console.error("❌ Erreur login :", err);
     setError('Identifiants incorrects ou serveur injoignable.');
