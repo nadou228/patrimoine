@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../api/auth';
+import { resolveApiUrl } from '../api/config';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   AlertCircle,
@@ -82,7 +83,8 @@ const LoginPage: React.FC = () => {
     setError('');
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:8082/api/auth/2fa/verify',
+      const res = await axios.post(
+    resolveApiUrl('/api/auth/2fa/verify'),
         { code: parseInt(finalCode, 10) },
         { headers: { Authorization: `Bearer ${tempToken}` } }
       );
