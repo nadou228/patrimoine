@@ -1,0 +1,41 @@
+:root {
+  /* PATRIS 2024 PREMIUM DESIGN TOKENS - LIGHT EXECUTIVE */
+  --primary: #0596de;
+  --primary-dark: #0478b0;
+  --primary-glow: rgba(5, 150, 222, 0.25);
+  --accent: #ff756b;
+  --accent-hover: #e5655c;
+  --success: #179354;
+  --warning: #fca000;
+  --danger: #e22b31;
+  --danger-glow: rgba(226, 43, 49, 0.2);
+  
+  --sidebar-width: 280px;
+  
+  --bg-main: #f5f9fb;
+  --bg-sidebar: #ffffff;
+  --bg-base: #f5f9fb;
+  --bg-surface: #ffffff;
+  --card-bg: #ffffff;
+  --bg-card: #ffffff;
+  --glass-border: #e2e8f0;
+  --text-main: #0c192a;
+  --text-primary: #0c192a;
+  --text-secondary: #4b5563;
+  --text-dim: #5c6c7f;
+  --input-bg: #ffffff;
+  --bg-input: #ffffff;
+  --border-color: #e2e8f0;
+  --shadow-premium: 0 4px 12px rgba(12, 25, 42, 0.05);
+  --shadow: 0 4px 12px rgba(12, 25, 42, 0.05);
+  --content-gradient: none;
+  --bg-hover: #f0f7fb;
+  --decision-bg: #f5f9fb;
+  --decision-text: #0c192a;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
