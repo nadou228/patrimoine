@@ -34,8 +34,48 @@ async function fetchNom<T>(endpoint: string, params: Record<string, string> = {}
   const res = await fetch(`${API}/nomenclature/${endpoint}${qs ? `?${qs}` : ""}`, {
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token") ?? ""}` },
   });
-  if (!res.ok) throw new Error(`API ${res.status}`);
+  if (!res.ok) {
+    // Le controller renvoie { success:false, error:{ code, message } } sur les erreurs (400/404)
+    let message = `API ${res.status}`;
+    try {
+      const body = await res.json();
+      message = body?.error?.message ?? message;
+    } catch {
+      /* réponse non-JSON, on garde le message générique */
+    }
+    throw new Error(message);
+  }
   return ((await res.json()).data ?? []) as T[];
+}
+
+/**
+ * /comptes, /categories et /familles sont construits côté service via des Map<String,Object>
+ * dont les clés sont déjà en snake_case (compte_principal, libelle_compte, nb_items, categorie, famille…).
+ * Ces trois endpoints n'ont donc pas besoin de normalisation.
+ *
+ * En revanche /articles et /search renvoient directement des entités JPA NomenclatureCompte,
+ * sérialisées par Jackson avec les noms de champs Java (camelCase : comptePrincipal, libelleCompte,
+ * typeBien, uniteDefaut…). On normalise donc ces deux endpoints vers la forme ArticleOption
+ * attendue par le composant, en acceptant les deux conventions pour rester tolérant si le backend
+ * évolue (ex: entité avec @JsonProperty en snake_case).
+ */
+function normalizeArticle(raw: any): ArticleOption {
+  return {
+    code: raw.code,
+    intitule: raw.intitule,
+    compte_principal: raw.compte_principal ?? raw.comptePrincipal,
+    libelle_compte: raw.libelle_compte ?? raw.libelleCompte,
+    categorie: raw.categorie,
+    famille: raw.famille,
+    type_bien: raw.type_bien ?? raw.typeBien,
+    unite_defaut: raw.unite_defaut ?? raw.uniteDefaut ?? null,
+    partie: raw.partie,
+  };
+}
+
+async function fetchArticles(endpoint: "articles" | "search", params: Record<string, string> = {}): Promise<ArticleOption[]> {
+  const raw = await fetchNom<any>(endpoint, params);
+  return raw.map(normalizeArticle);
 }
 
 const DEFAULT_LEVELS = [
@@ -204,7 +244,7 @@ export default function NomenclatureSelector({ partie, family, onSelect, disable
     // 1. Chercher l'article par son code exact via l'API search
     const p: Record<string, string> = { q: initialCode, limit: "5" };
     if (partie) p.partie = partie;
-    fetchNom<ArticleOption>("search", p)
+    fetchArticles("search", p)
       .then(async (results) => {
         const found = results.find(r => r.code === initialCode) || results[0];
         if (!found) return;
@@ -224,7 +264,7 @@ export default function NomenclatureSelector({ partie, family, onSelect, disable
         const fam = found.famille;
         setFamille(fam);
         // Charger articles
-        const arts = await fetchNom<ArticleOption>("articles", { compte: cpt, categorie: cat, famille: fam });
+        const arts = await fetchArticles("articles", { compte: cpt, categorie: cat, famille: fam });
         setArticles(arts);
         setArticle(found.code);
       })
@@ -282,7 +322,7 @@ export default function NomenclatureSelector({ partie, family, onSelect, disable
     setArticle(""); setArticles([]);
     if (!famille) return;
     setLA(true);
-    fetchNom<ArticleOption>("articles", { compte, categorie, famille }).then(setArticles).catch(console.error).finally(() => setLA(false));
+    fetchArticles("articles", { compte, categorie, famille }).then(setArticles).catch(console.error).finally(() => setLA(false));
   }, [famille]);
 
   useEffect(() => {
@@ -298,7 +338,7 @@ export default function NomenclatureSelector({ partie, family, onSelect, disable
     try {
       const p: Record<string, string> = { q: term, limit: "15" };
       if (partie) p.partie = partie;
-      setSearchRes(await fetchNom<ArticleOption>("search", p));
+      setSearchRes(await fetchArticles("search", p));
     } catch { setSearchRes([]); } finally { setSearching(false); }
   }, [partie]);
 
